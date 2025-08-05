@@ -20,7 +20,7 @@ import re
 
 # Connect to MongoDB
 client = pymongo.MongoClient(
-    "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "mongodb+srv://URL",
     serverSelectionTimeoutMS=30000,
     socketTimeoutMS=120000,
     connectTimeoutMS=20000,
@@ -54,7 +54,7 @@ import pymongo
 
 # Connect to MongoDB
 client = pymongo.MongoClient(
-    "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "mongodb+srv://URL",
     serverSelectionTimeoutMS=30000,
     socketTimeoutMS=120000,
     connectTimeoutMS=20000,
@@ -93,7 +93,7 @@ import pymongo
 
 # Connect to MongoDB
 client = pymongo.MongoClient(
-    "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "mongodb+srv://URL",
     serverSelectionTimeoutMS=60000,
     socketTimeoutMS=180000,
     connectTimeoutMS=40000,

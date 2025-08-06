@@ -15,32 +15,40 @@ Question: From the `movies` collection, return the documents with the `plot` tha
 Answer:
 
 ```python
-import pymongo
-import re
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
-# Connect to MongoDB
-client = pymongo.MongoClient(
-    "mongodb+srv://URL",
-    serverSelectionTimeoutMS=30000,
-    socketTimeoutMS=120000,
-    connectTimeoutMS=20000,
-    maxPoolSize=10,
-    retryWrites=True
-)
+# MongoDB connection URI
+uri = "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-# Access the movies collection
-db = client['sample_mflix']
-collection = db['movies']
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
 
-# Query: Find plots that start with "war"
-results = collection.find(
-    {"plot": {"$regex": "^war", "$options": "i"}},  # case-insensitive match at the beginning
-    {"title": 1, "plot": 1, "released": 1, "_id": 0}  # fields to return
-).sort("released", 1).limit(5)
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(f"Ping failed: {e}")
 
-# Print results
-for doc in results:
+# Access the desired database and collection
+db = client["sample_mflix"]  # Replace with your actual database name
+collection = db["movies"]
+
+# Query: plot starts with "war", sorted by released date ascending, limited to 5 results
+query = { "plot": { "$regex": "^war", "$options": "i" } }
+projection = { "title": 1, "plot": 1, "released": 1, "_id": 0 }
+cursor = collection.find(query, projection).sort("released", 1).limit(5)
+
+# Print the results
+for doc in cursor:
     print(doc)
+Pinged your deployment. You successfully connected to MongoDB!
+{'plot': 'Warrior/pacifist Princess Nausicaè desperately struggles to prevent two warring nations from destroying themselves and their dying planet.', 'title': 'Nausicaè of the Valley of the Wind', 'released': datetime.datetime(1984, 3, 11, 0, 0)}
+{'plot': 'Warrior/pacifist Princess Nausicaè desperately struggles to prevent two warring nations from destroying themselves and their dying planet.', 'title': 'Nausicaè of the Valley of the Wind', 'released': datetime.datetime(1984, 3, 11, 0, 0)}
+{'plot': 'Warlords Kagetora and Takeda each wish to prevent the other from gaining hegemony in feudal Japan. The two samurai leaders pursue one another across the countryside, engaging in massive ...', 'title': 'Heaven and Earth', 'released': datetime.datetime(1991, 2, 8, 0, 0)}
+{'plot': 'Warning! This synopsis contains spoilers Bajo las estrellas (beneath the stars) features the selfish...', 'title': 'Under the Stars', 'released': datetime.datetime(2007, 6, 15, 0, 0)}
+{'plot': 'Warring alien and predator races descend on a small town, where unsuspecting residents must band together for any chance of survival.', 'title': 'Aliens vs. Predator: Requiem', 'released': datetime.datetime(2007, 12, 25, 0, 0)}
 ```
 
 ### Question 2
@@ -50,36 +58,57 @@ Question: Group by `rated` and count the number of movies in each.
 Answer:
 
 ```python
-import pymongo
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
-# Connect to MongoDB
-client = pymongo.MongoClient(
-    "mongodb+srv://URL",
-    serverSelectionTimeoutMS=30000,
-    socketTimeoutMS=120000,
-    connectTimeoutMS=20000,
-    maxPoolSize=10,
-    retryWrites=True
-)
+# MongoDB connection URI
+uri = "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-# Access the movies collection
-db = client['sample_mflix']
-collection = db['movies']
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
 
-# Aggregation pipeline to group by "rated" and count
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(f"Ping failed: {e}")
+
+# Access the desired database and collection
+db = client["sample_mflix"]  # Replace with your actual database name
+collection = db["movies"]
+
+# Aggregation pipeline: group by 'rated' and count
 pipeline = [
-    {"$group": {
-        "_id": "$rated",             # Group by the "rated" field
-        "count": {"$sum": 1}         # Count documents in each group
-    }},
-    {"$sort": {"count": -1}}         # Optional: sort by count descending
+    { "$group": { "_id": "$rated", "count": { "$sum": 1 } } },
+    { "$sort": { "count": -1 } }  # Optional: sort by count descending
 ]
 
-# Execute aggregation and print results
+# Execute the aggregation
 results = collection.aggregate(pipeline)
 
-for doc in results:
-    print(doc)
+# Print results
+for result in results:
+    print(f"Rated: {result['_id']}, Count: {result['count']}")
+Pinged your deployment. You successfully connected to MongoDB!
+Rated: None, Count: 9895
+Rated: R, Count: 5537
+Rated: PG-13, Count: 2321
+Rated: PG, Count: 1852
+Rated: APPROVED, Count: 709
+Rated: G, Count: 477
+Rated: PASSED, Count: 181
+Rated: TV-14, Count: 89
+Rated: TV-PG, Count: 76
+Rated: TV-MA, Count: 60
+Rated: TV-G, Count: 59
+Rated: GP, Count: 44
+Rated: M, Count: 37
+Rated: Approved, Count: 5
+Rated: AO, Count: 3
+Rated: TV-Y7, Count: 3
+Rated: Not Rated, Count: 1
+Rated: OPEN, Count: 1
 ```
 
 ### Question 3
@@ -89,40 +118,42 @@ Question: Count the number of movies with 3 comments or more.
 Answer:
 
 ```python
-import pymongo
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
-# Connect to MongoDB
-client = pymongo.MongoClient(
-    "mongodb+srv://URL",
-    serverSelectionTimeoutMS=60000,
-    socketTimeoutMS=180000,
-    connectTimeoutMS=40000,
-    maxPoolSize=10,
-    retryWrites=True
-)
+# MongoDB connection URI
+uri = "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-# Access the sample_mflix database and movies collection
-db = client['sample_mflix']
-collection = db['movies']
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
 
-# Aggregation pipeline to count movies with at least 3 comments
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(f"Ping failed: {e}")
+
+# Access the database and the comments collection
+db = client["sample_mflix"]  # Make sure this is the correct database name
+comments_collection = db["comments"]  # This should be the collection storing comments
+
+# Aggregation pipeline to count movies with 3 or more comments
 pipeline = [
-    {"$lookup": {
-        "from": "comments",
-        "localField": "_id",
-        "foreignField": "movie_id",
-        "as": "movie_comments"
-    }},
-    {"$match": {
-        "$expr": {"$gte": [{"$size": "$movie_comments"}, 3]}
-    }},
-    {"$count": "movies_with_3_or_more_comments"}
+    { "$group": { "_id": "$movie_id", "comment_count": { "$sum": 1 } } },
+    { "$match": { "comment_count": { "$gte": 3 } } },
+    { "$count": "movies_with_3_or_more_comments" }
 ]
 
-# Execute and print result
-result = list(collection.aggregate(pipeline))
+# Execute the aggregation
+results = comments_collection.aggregate(pipeline)
 
-print(client['sample_mflix']['movies'].find_one())
+# Print the result
+for result in results:
+    print(f"Number of movies with 3 or more comments: {result['movies_with_3_or_more_comments']}")
+
+Pinged your deployment. You successfully connected to MongoDB!
+Number of movies with 3 or more comments: 400
 ```
 
 ## Submission

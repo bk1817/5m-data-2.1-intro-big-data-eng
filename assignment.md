@@ -104,25 +104,50 @@ Question: Count the number of movies with 3 comments or more.
 Answer:
 
 ```python
-# Access the database and the comments collection
 db = client["sample_mflix"]  # Make sure this is the correct database name
 comments_collection = db["comments"]  # This should be the collection storing comments
 
-# Aggregation pipeline to count movies with 3 or more comments
-pipeline = [
-    { "$group": { "_id": "$movie_id", "comment_count": { "$sum": 1 } } },
-    { "$match": { "comment_count": { "$gte": 3 } } },
-    { "$count": "movies_with_3_or_more_comments" }
-]
+# Step 1: Check if the collection has any documents
+doc_count = comments_collection.count_documents({})
+if doc_count == 0:
+    print("❌ The 'comments' collection is empty.")
+else:
+    print(f"✅ Found {doc_count} documents in 'comments' collection.")
 
-# Execute the aggregation
-results = comments_collection.aggregate(pipeline)
+    # Step 2: Print one document to inspect field names
+    sample = comments_collection.find_one()
+    print("🔍 Sample document:")
+    print(sample)
 
-# Print the result
-for result in results:
-    print(f"Number of movies with 3 or more comments: {result['movies_with_3_or_more_comments']}")
+    # Step 3: Run aggregation to count comments per movie
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$movie_id",  # Group by movie_id
+                "comment_count": {"$sum": 1}
+            }
+        },
+        {
+            "$match": {
+                "comment_count": {"$gt": 3}  # Filter for more than 3 comments
+            }
+        },
+        {
+            "$count": "movies_with_more_than_3_comments"
+        }
+    ]
 
-Number of movies with 3 or more comments: 400
+    result = list(comments_collection.aggregate(pipeline))
+
+    # Step 4: Print result
+    if result:
+        print("🎬 Number of movies with more than 3 comments:", result[0]["movies_with_more_than_3_comments"])
+    else:
+        print("⚠️ No movies found with more than 3 comments.")
+✅ Found 41079 documents in 'comments' collection.
+🔍 Sample document:
+{'_id': ObjectId('5a9427648b0beebeb6957a21'), 'name': "Jaqen H'ghar", 'email': 'tom_wlaschiha@gameofthron.es', 'movie_id': ObjectId('573a1390f29313caabcd516c'), 'text': 'Minima odit officiis minima nam. Aspernatur id reprehenderit eius inventore amet laudantium. Eos unde enim recusandae fugit sint.', 'date': datetime.datetime(1981, 11, 8, 4, 32, 25)}
+🎬 Number of movies with more than 3 comments: 250
 ```
 
 ## Submission

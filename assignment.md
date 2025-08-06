@@ -15,6 +15,8 @@ Question: From the `movies` collection, return the documents with the `plot` tha
 Answer:
 
 ```python
+import pymongo
+client = pymongo.MongoClient("mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 

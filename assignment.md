@@ -16,12 +16,12 @@ Answer:
 
 ```python
 import pymongo
-client = pymongo.MongoClient("mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+client = pymongo.MongoClient("mongodb+srv://url")
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 # MongoDB connection URI
-uri = "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+uri = "mongodb+srv://url"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))

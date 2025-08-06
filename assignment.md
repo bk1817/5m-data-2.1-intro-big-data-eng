@@ -58,22 +58,6 @@ Question: Group by `rated` and count the number of movies in each.
 Answer:
 
 ```python
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-
-# MongoDB connection URI
-uri = "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(f"Ping failed: {e}")
-
 # Access the desired database and collection
 db = client["sample_mflix"]  # Replace with your actual database name
 collection = db["movies"]
@@ -90,7 +74,7 @@ results = collection.aggregate(pipeline)
 # Print results
 for result in results:
     print(f"Rated: {result['_id']}, Count: {result['count']}")
-Pinged your deployment. You successfully connected to MongoDB!
+
 Rated: None, Count: 9895
 Rated: R, Count: 5537
 Rated: PG-13, Count: 2321
@@ -118,22 +102,6 @@ Question: Count the number of movies with 3 comments or more.
 Answer:
 
 ```python
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-
-# MongoDB connection URI
-uri = "mongodb+srv://keeboonking:N7rKYPQluTL44MbZ@cluster0.0zfhbtq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(f"Ping failed: {e}")
-
 # Access the database and the comments collection
 db = client["sample_mflix"]  # Make sure this is the correct database name
 comments_collection = db["comments"]  # This should be the collection storing comments
@@ -152,7 +120,6 @@ results = comments_collection.aggregate(pipeline)
 for result in results:
     print(f"Number of movies with 3 or more comments: {result['movies_with_3_or_more_comments']}")
 
-Pinged your deployment. You successfully connected to MongoDB!
 Number of movies with 3 or more comments: 400
 ```
 
